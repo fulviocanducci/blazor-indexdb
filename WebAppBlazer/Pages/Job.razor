@@ -1,0 +1,16 @@
+﻿@page "/jobs"
+
+<h3>Jobs</h3>
+<div>
+    <input type="text" @bind-value="@JobText" />
+    <button @onclick="HandlerJobAddAsync">Add</button>
+</div>
+
+@code {
+    string JobText { get; set; }
+
+    async Task<bool> HandlerJobAddAsync()
+    {
+        return await Task.FromResult(true);
+    }
+}
