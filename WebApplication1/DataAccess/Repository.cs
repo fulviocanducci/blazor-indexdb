@@ -42,9 +42,9 @@ namespace WebApplication1.DataAccess
             await DbManager.DeleteRecord(Storename(), id);
         }
 
-        public async Task<List<T>> AllAsync()
+        public async Task<IList<T>> AllAsync()
         {
             return await DbManager.GetRecords<T>(Storename());
-        }
+        }        
     }
 }

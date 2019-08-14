@@ -1,9 +1,11 @@
-﻿using TG.Blazor.IndexedDB;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using TG.Blazor.IndexedDB;
 using WebApplication1.Models;
 
 namespace WebApplication1.DataAccess
 {
-    public class RepositoryJob : Repository<Job>
+    public class RepositoryJob : RepositoryJobImpl
     {
         public RepositoryJob(IndexedDBManager dbManager) 
             : base(dbManager)
@@ -13,6 +15,6 @@ namespace WebApplication1.DataAccess
         public override string Storename()
         {
             return "job";
-        }
+        }       
     }
 }

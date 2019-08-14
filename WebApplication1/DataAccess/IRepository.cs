@@ -9,6 +9,6 @@ namespace WebApplication1.DataAccess
         T Update(T model);
         Task<T> FindAsync<TInput>(TInput id);
         Task DeleteAsync<TInput>(TInput id);
-        Task<List<T>> AllAsync();
+        Task<IList<T>> AllAsync();
     }
 }

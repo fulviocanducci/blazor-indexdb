@@ -22,10 +22,10 @@ namespace WebApplication1
                     {
                         new IndexSpec{ Name = "description", KeyPath = "description", Unique = false, Auto = false},
                         new IndexSpec{ Name = "done", KeyPath = "done", Unique = false, Auto = false}
-                    }
+                    }              
                 });
             });
-            services.AddSingleton<Repository<Job>, RepositoryJob>();
+            services.AddSingleton<RepositoryJobImpl, RepositoryJob>();
         }
 
         public void Configure(IComponentsApplicationBuilder app)

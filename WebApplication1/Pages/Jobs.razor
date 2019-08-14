@@ -1,13 +1,13 @@
 ﻿@page "/jobs"
-@inject Repository<Job> Repository;
+@inject RepositoryJobImpl Repository;
 @using WebApplication1.Models
 @using WebApplication1.DataAccess
 <h3>Jobs</h3>
 <div class="row">
-    <div class="col-8 mt-2">
+    <div class="col-md-8 mt-2">
         <input type="text" @bind-value="Description" @onkeyup="@(async(e) => await HandlerKeyUpAsync(e))" class="form-control" />
     </div>
-    <div class="col-4 mt-2">
+    <div class="col-md-4 mt-2">
         <button @onclick="@(async() => await AddJobDescriptionAsync())" class="btn btn-outline-primary btn-block">Add</button>
     </div>
 </div>
@@ -18,14 +18,27 @@
     }
     else
     {
+        <div class="btn-group btn-group-toggle mt-4" data-toggle="buttons">
+            <label class="@(DoneTextStatus=="all"?"btn btn-secondary active":"btn btn-secondary")">
+                <input type="radio" name="options" id="option1" autocomplete="off" @onclick="@(async(args) => await SetDoneTextStatusAsync("all"))" checked=@(DoneTextStatus=="all") /> All
+            </label>
+            <label class="@(DoneTextStatus=="done"?"btn btn-secondary active":"btn btn-secondary")">
+                <input type="radio" name="options" id="option2" autocomplete="off" @onclick="@(async(args) => await SetDoneTextStatusAsync("done"))" checked=@(DoneTextStatus=="done") /> Done
+            </label>
+            <label class="@(DoneTextStatus=="wait"?"btn btn-secondary active":"btn btn-secondary")">
+                <input type="radio" name="options" id="option3" autocomplete="off" @onclick="@(async(args) => await SetDoneTextStatusAsync("wait"))" checked=@(DoneTextStatus=="wait") /> Wait
+            </label>
+        </div>
         <div class="list-group mt-4">
             @foreach (var result in Results)
             {
                 <div class="list-group-item d-flex justify-content-between align-items-center">
-                    @result.Description                    
+                    @result.Description
                     <span class="form-check form-check-inline">
-                        <input class="form-check-input regular-checkbox" type="checkbox" checked="@result.Done" @onclick="@(async(args) => await SetJobDoneAsync(result))" />
-                    </span>                     
+                        <button class=@(@result.Done?"btn btn-success":"btn btn-info") disabled="@result.Done" @onclick="@(async() => await SetJobDoneAsync(result))">
+                            @(@result.Done ? "Done" : "Wait")
+                        </button>
+                    </span>
                 </div>
             }
         </div>
@@ -34,16 +47,40 @@
 
 @code {
     string Description { get; set; }
-    List<Job> Results { get; set; }
+    IList<Job> Results { get; set; }
+    //bool? DoneStatus { get; set; }
+    string DoneTextStatus = "all";
 
     protected override async Task OnInitAsync()
     {
+        await LoadJobListAsync();        
+    }
+
+    async Task SetDoneTextStatusAsync(string status)
+    {
+        DoneTextStatus = status;
         await LoadJobListAsync();
     }
 
     async Task LoadJobListAsync()
     {
-        Results = await Repository.AllAsync();
+        bool? done = null;
+        if (DoneTextStatus == "done")
+        {
+            done = true;
+        }
+        else if (DoneTextStatus == "wait")
+        {
+            done = false;
+        }
+        if (done == null)
+        {
+            Results = await Repository.AllAsync();
+        }
+        else
+        {
+            Results = await Repository.AllDoneAsync(done.Value);
+        }
     }
 
     async Task SetJobDoneAsync(Job job)
@@ -70,7 +107,7 @@
     }
 
     async Task HandlerKeyUpAsync(UIKeyboardEventArgs args)
-    {        
+    {
         if (args.Key == "Enter")
         {
             await AddJobDescriptionAsync();
